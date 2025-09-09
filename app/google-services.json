@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "627133251328",
+    "project_id": "resume-builder-app-e59af",
+    "storage_bucket": "resume-builder-app-e59af.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:627133251328:android:7abd1e8816377af6763de5",
+        "android_client_info": {
+          "package_name": "com.example.resumebuilderapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDAsHutcQSUzOE5IGR0lbb4CRNLVAJCRNU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
