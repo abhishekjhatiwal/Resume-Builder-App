@@ -51,8 +51,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.firebase.database)
-    implementation(libs.firebase.storage.ktx)
-    implementation(libs.firebase.auth.ktx)
+//    implementation(libs.firebase.storage.ktx)
+//    implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.auth)
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
@@ -65,10 +65,10 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     // Firebase (Realtime Database + Storage + Auth)
-    implementation("com.google.firebase:firebase-database-ktx")
+//    implementation("com.google.firebase:firebase-database-ktx")
    // implementation("com.google.firebase:firebase-auth-ktx")
 
-//    implementation(platform("com.google.firebase:firebase-bom:34.2.0"))
+    implementation(platform("com.google.firebase:firebase-bom:34.2.0"))
 
     // Add the dependency for the Cloud Storage library
     // When using the BoM, you don't specify versions in Firebase library dependencies
@@ -88,7 +88,11 @@ dependencies {
 
     // Coil for image loading
     implementation("io.coil-kt:coil-compose:2.7.0")
+    implementation("androidx.activity:activity-compose:1.8.0")
+// For activity result contracts
 
-
+    // In your app-level build.gradle.kts file
+    implementation("androidx.compose:compose-bom:2023.08.00") // ⬅️ Add this line
+    implementation("androidx.compose.material:material-icons-extended") // ⬅️ The version is now inherited from the BOM
 
 }

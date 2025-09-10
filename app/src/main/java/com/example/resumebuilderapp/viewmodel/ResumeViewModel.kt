@@ -141,7 +141,7 @@ class ResumeViewModel(app: Application) : AndroidViewModel(app) {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun downloadPDF(uri: NavBackStackEntry){
-        if(uri == null) return
+       // if(uri == null) return
         viewModelScope.launch(Dispatchers.IO) {
             runCatching {
                 val bitmap = localBitmapOrNull()

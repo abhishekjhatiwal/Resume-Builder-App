@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.resumebuilderapp.navigation.AppNavHost
 import com.example.resumebuilderapp.ui.theme.ResumeBuilderAppTheme
 
@@ -21,10 +22,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             ResumeBuilderAppTheme {
 //                AppNavigation()
-                AppNavHost()
-//                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    AppNavi
-//                }
+                val navController = rememberNavController()
+                AppNavHost(navController = navController)
             }
         }
     }

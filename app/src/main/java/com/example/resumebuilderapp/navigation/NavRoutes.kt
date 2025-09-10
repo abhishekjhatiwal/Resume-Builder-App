@@ -11,7 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.resumebuilderapp.uiscreen.ExperienceScreen
 import com.example.resumebuilderapp.uiscreen.PersonalScreen
 import com.example.resumebuilderapp.uiscreen.PreviewScreen
-import com.example.resumebuilderapp.uiscreen.QulificationScreen
+import com.example.resumebuilderapp.uiscreen.QualificationScreen
 import com.example.resumebuilderapp.viewmodel.ResumeViewModel
 
 object Routes {
@@ -25,10 +25,10 @@ object Routes {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AppNavHost(navController: NavHostController = rememberNavController()){
-    val resumeViewModel : ResumeViewModel = viewModel()
-    NavHost(navController = navController, startDestination = Routes.PERSONAL){
-        composable(Routes.PERSONAL){
+fun AppNavHost(navController: NavHostController = rememberNavController()) {
+    val resumeViewModel: ResumeViewModel = viewModel()
+    NavHost(navController = navController, startDestination = Routes.PERSONAL) {
+        composable(Routes.PERSONAL) {
             PersonalScreen(
                 uiState = resumeViewModel.uiState,
                 onNext = {
@@ -42,21 +42,37 @@ fun AppNavHost(navController: NavHostController = rememberNavController()){
                 }
             )
         }
-        composable(Routes.QUALIFICATION){
-            QulificationScreen(
+        composable(Routes.QUALIFICATION) {
+//            QualificationScreen(
+//                uiState = resumeViewModel.uiState,
+//                onPrev = {
+//                    navController.popBackStack()
+//                },
+//                onNext = {
+//                    navController.navigate(Routes.EXPERIENCE)
+//                },
+//                onFailedChange = { degree, institute, grade, startDate, endDate, skills ->
+////                    resumeViewModel.updateQulification(degree, institute, grade, startDate, endDate, skills)
+//                } //  resumeViewModel::updateQulification
+//            )
+            QualificationScreen(
                 uiState = resumeViewModel.uiState,
-                onPrev = {
-                    navController.popBackStack()
-                },
-                onNext = {
-                    navController.navigate(Routes.EXPERIENCE)
-                },
-                onFailedChange = { degree, institute, grade, startDate, endDate, skills ->
-                    resumeViewModel.updateQulification(degree, institute, grade, startDate, endDate, skills)
-                } //  resumeViewModel::updateQulification
+                onPrev = { navController.popBackStack() },
+                onNext = { navController.navigate(Routes.EXPERIENCE) },
+                onFieldsChange = { degree, institute, grade, startDate, endDate, skills ->
+                    resumeViewModel.updateQulification(
+                        degree,
+                        institute,
+                        grade,
+                        startDate,
+                        endDate,
+                        skills
+                    )
+                }
             )
+
         }
-        composable(Routes.EXPERIENCE){
+        composable(Routes.EXPERIENCE) {
             ExperienceScreen(
                 uiState = resumeViewModel.uiState,
                 onPrev = {
@@ -66,11 +82,17 @@ fun AppNavHost(navController: NavHostController = rememberNavController()){
                     navController.navigate(Routes.PREVIEW)
                 },
                 onFailedChange = { company, position, startDate, endDate, description ->
-                    resumeViewModel.updateExperience(company, position, startDate, endDate, description)
+                    resumeViewModel.updateExperience(
+                        company,
+                        position,
+                        startDate,
+                        endDate,
+                        description
+                    )
                 } // resumeViewModel::updateExperience
             )
         }
-        composable(Routes.PREVIEW){
+        composable(Routes.PREVIEW) {
             PreviewScreen(
                 uiState = resumeViewModel.uiState,
                 onEdit = {
