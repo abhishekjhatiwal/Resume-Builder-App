@@ -10,7 +10,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavBackStackEntry
 import com.example.resumebuilderapp.data.ResumeReposetiry
 import com.example.resumebuilderapp.data.UiState
 import com.example.resumebuilderapp.utils.toSoftwareBitmap
@@ -140,7 +139,7 @@ class ResumeViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun downloadPDF(uri: NavBackStackEntry){
+    fun downloadPDF(uri: Uri?){
        // if(uri == null) return
         viewModelScope.launch(Dispatchers.IO) {
             runCatching {

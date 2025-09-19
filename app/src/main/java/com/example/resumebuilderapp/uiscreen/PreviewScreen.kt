@@ -18,7 +18,138 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.resumebuilderapp.data.UiState
 import android.R
+import android.R.id.title
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DatePickerDefaults.colors
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.navigation.ActivityNavigatorExtras
+import coil.compose.AsyncImage
+import org.jetbrains.annotations.Async
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PreviewScreen(
+    uiState: UiState,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+    onSaveDatabase: () -> Unit,
+    onDownloadPDF: (Uri?) -> Unit,
+) {
+
+    val createPDF =
+        rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application_/pdf")) { uri ->
+            onDownloadPDF(uri)
+        }
+
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("Resume Preview") },
+                colors = TopAppBarDefaults.topAppBarColors(Color.White),
+                navigationIcon = {
+                    TextButton(onClick = onEdit) {
+                        Text(
+                            "Edit",
+                            color = Color.Black
+                        )
+                    }
+                },
+                actions = {
+                    TextButton(onClick = onDelete) { Text("Delete", color = Color.Black) }
+                    //  TextButton(onClick = { onSaveDatabase() }) { Text("Save", color = Color.Black) }
+                }
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(16.dp)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Personal Info
+            Text("Resume Preview", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(6.dp))
+
+            // Resume Card
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Button(
+                    onClick = { onSaveDatabase() },
+                    enabled = !uiState.isSaving,
+                    colors = ButtonDefaults.buttonColors(Color.Blue)
+                ) {
+                    Text( if (uiState.isSaving) "Saving..." else "Save",
+                        color = Color.White
+                        )
+                }
+                Button(onClick = { createPDF.launch("resume_${System.currentTimeMillis()}.pdf") },
+                 //   enabled = !uiState.isSaving,
+                    colors = ButtonDefaults.buttonColors(Color.Blue)
+                ) {
+                    Text("Download PDF", color = Color.White)
+                }
+            }
+            uiState.errorMessage?.let{
+                Text(it, color = MaterialTheme.colorScheme.error)
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreviewScreen(
@@ -148,3 +279,6 @@ fun PreviewScreen(
         }
     }
 }
+
+
+ */

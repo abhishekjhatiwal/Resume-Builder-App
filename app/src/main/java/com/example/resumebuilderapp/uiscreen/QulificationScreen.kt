@@ -2,6 +2,7 @@ package com.example.resumebuilderapp.uiscreen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -10,13 +11,158 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.resumebuilderapp.data.UiState
 
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun QualificationScreen(
+    uiState: UiState,
+    onPrev: () -> Unit,
+    onNext: () -> Unit,
+    onFieldsChange: (
+        degree: String?,
+        institute: String?,
+        grade: String?,
+        startDate: String?,
+        endDate: String?,
+        skills: String?
+    ) -> Unit
+) {
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("My Resume", color = Color.White) },
+                colors = TopAppBarDefaults.topAppBarColors(Color.Blue),
+                navigationIcon = {TextButton(onClick = onPrev) { Text("Back", color = Color.White) }}
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("Educational Qualifications", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Spacer(Modifier.height(16.dp))
+            OutlinedTextField(
+                value = uiState.resume.qualificationsSkills.degree,
+                onValueChange = { onFieldsChange(it, null, null, null, null, null) },
+                label = { Text("Degree") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            )
+            OutlinedTextField(
+                value = uiState.resume.qualificationsSkills.degree,
+                onValueChange = { onFieldsChange(null, it, null, null, null, null) },
+                label = { Text("Institute") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            )
+            OutlinedTextField(
+                value = uiState.resume.qualificationsSkills.degree,
+                onValueChange = { onFieldsChange(null, null, it, null, null, null) },
+                label = { Text("Grade") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedTextField(
+                    value = uiState.resume.qualificationsSkills.degree,
+                    onValueChange = { onFieldsChange(null, null, null, it, null, null) },
+                    label = { Text("Start Year") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                OutlinedTextField(
+                    value = uiState.resume.qualificationsSkills.degree,
+                    onValueChange = { onFieldsChange(null, null, null, null, it, null) },
+                    label = { Text("End year") },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp)
+                )
+            }
+            OutlinedTextField(
+                value = uiState.resume.qualificationsSkills.degree,
+                onValueChange = { onFieldsChange(null, null, null, null, null, it) },
+                label = { Text("Skills") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            )
+            Spacer(Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Button(
+                    onClick = { onNext() },
+                    colors = ButtonDefaults.buttonColors(Color.Blue),
+                    enabled = uiState.resume.qualificationsSkills.degree.isNotBlank() && uiState.resume.qualificationsSkills.institute.isNotBlank()
+                ){
+                    Text("Next")
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QualificationScreen(
@@ -121,6 +267,7 @@ fun QualificationScreen(
                         modifier = Modifier.weight(1f),
                         singleLine = true,
                         trailingIcon = {
+                         //   IconButton(onClick = { DatePickerModal(onDateSelected = { startDate = it.toString() }, onDismiss = {}) }) { }
                             Icon(Icons.Default.DateRange, contentDescription = "Start Date")
                         },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -235,3 +382,6 @@ private fun isFormValid(degree: String, institute: String): Boolean {
 //    onNext:(Uri) -> Unit,
 //    onFailedChange: (degree:String?, institute: String?, grade: String?, startDate: String?, endDate: String?, skills: String?) -> Unit,
 //){}
+
+
+ */
