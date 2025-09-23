@@ -127,8 +127,8 @@ fun QualificationScreen(
                 Button(
                     onClick = { onNext() },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
-                    enabled = uiState.resume.qualificationsSkills.degree.isNotBlank() &&
-                            uiState.resume.qualificationsSkills.institute.isNotBlank()
+//                    enabled = uiState.resume.qualificationsSkills.degree.isNotBlank() &&
+//                            uiState.resume.qualificationsSkills.institute.isNotBlank()
                 ) {
                     Text("Next")
                 }
