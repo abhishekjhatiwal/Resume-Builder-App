@@ -12,13 +12,14 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.resumebuilderapp.data.ResumeReposetiry
 import com.example.resumebuilderapp.data.UiState
+import com.example.resumebuilderapp.utils.generateResumePDFToURI
 import com.example.resumebuilderapp.utils.toSoftwareBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ResumeViewModel(app: Application) : AndroidViewModel(app) {
-    private val resumeReposetiry = ResumeReposetiry()
+    private val resumeRepository = ResumeReposetiry()
     private var internalUiState = mutableStateOf(UiState())
     val uiState: UiState get() = internalUiState.value
 
@@ -100,12 +101,15 @@ class ResumeViewModel(app: Application) : AndroidViewModel(app) {
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun deleteAll(onDone: () -> Unit) {
+        val Context = getApplication<Application>()
         val id = internalUiState.value.resume.id
         viewModelScope.launch {
             internalUiState.value = internalUiState.value.copy(isSaving = true, errorMessage = null)
             runCatching {
-                if (id.isEmpty()) resumeReposetiry.delete(id)
+                if (id.isEmpty()) resumeRepository.delete(id)
+                generateResumePDFToURI(Context, internalUiState.value.resume, null, Uri.EMPTY)
             }.onSuccess {
                 internalUiState.value = UiState()
                 onDone()
@@ -124,7 +128,7 @@ class ResumeViewModel(app: Application) : AndroidViewModel(app) {
                 localBitmapOrNull()
             }
             runCatching {
-                resumeReposetiry.createOrUpdate(internalUiState.value.resume, bitmap)
+                resumeRepository.createOrUpdate(internalUiState.value.resume, bitmap)
             }.onSuccess { saved ->
                 internalUiState.value = internalUiState.value.copy(
                     isSaving = false,

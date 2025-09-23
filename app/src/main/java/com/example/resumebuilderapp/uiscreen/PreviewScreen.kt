@@ -1,37 +1,22 @@
 package com.example.resumebuilderapp.uiscreen
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
 import com.example.resumebuilderapp.data.UiState
-import android.R
-import android.R.id.title
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DatePickerDefaults.colors
-import androidx.compose.ui.draw.clip
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.graphics.Color
-import androidx.navigation.ActivityNavigatorExtras
-import coil.compose.AsyncImage
-import org.jetbrains.annotations.Async
-
+import com.example.resumebuilderapp.components.ResumeCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,6 +67,9 @@ fun PreviewScreen(
             Spacer(Modifier.height(6.dp))
 
             // Resume Card
+            ResumeCard(resume = uiState.resume, modifier = Modifier.fillMaxWidth())
+
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -91,23 +79,28 @@ fun PreviewScreen(
                     enabled = !uiState.isSaving,
                     colors = ButtonDefaults.buttonColors(Color.Blue)
                 ) {
-                    Text( if (uiState.isSaving) "Saving..." else "Save",
+                    Text(
+                        if (uiState.isSaving) "Saving..." else "Save",
                         color = Color.White
-                        )
+                    )
                 }
-                Button(onClick = { createPDF.launch("resume_${System.currentTimeMillis()}.pdf") },
-                 //   enabled = !uiState.isSaving,
+                Button(
+                    onClick = { createPDF.launch("resume_${System.currentTimeMillis()}.pdf") },
+                    //   enabled = !uiState.isSaving,
                     colors = ButtonDefaults.buttonColors(Color.Blue)
                 ) {
                     Text("Download PDF", color = Color.White)
                 }
             }
-            uiState.errorMessage?.let{
+            uiState.errorMessage?.let {
                 Text(it, color = MaterialTheme.colorScheme.error)
             }
         }
     }
 }
+
+
+
 
 
 
