@@ -2,38 +2,32 @@ package com.example.resumebuilderapp.utils
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.resumebuilderapp.data.ResumeData
-import androidx.core.graphics.scale
 import java.io.IOException
 
-//@RequiresApi(Build.VERSION_CODES.KITKAT)
-@RequiresApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.KITKAT)
 fun generateResumePDFToURI(
     context: Context,
     resume: ResumeData,
     photo: Bitmap?,
-    outputUri: Uri,
+    outputUri: Uri
 ) {
-    var pdf: PdfDocument? = null
-    var page: PdfDocument.Page? = null
+    val pageWidth = 595
+    val pageHeight = 842 // A4 size
 
+    val pdf = PdfDocument()
     try {
-        val pageWidth = 595
-        val pageHeight = 842    // A4 Size
-
-        pdf = PdfDocument()
         val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create()
-        page = pdf.startPage(pageInfo)
+        val page = pdf.startPage(pageInfo)
         val canvas = page.canvas
 
-        // Initialize paints with proper settings
-        val titlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        // ---- Simple paints ----
+        val titlePaint = Paint().apply {
             textSize = 20f
             typeface = android.graphics.Typeface.create(
                 android.graphics.Typeface.DEFAULT,
@@ -41,258 +35,59 @@ fun generateResumePDFToURI(
             )
             color = android.graphics.Color.BLACK
         }
-
-        val headerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            textSize = 14f
-            typeface = android.graphics.Typeface.create(
-                android.graphics.Typeface.DEFAULT,
-                android.graphics.Typeface.BOLD
-            )
-            color = android.graphics.Color.BLACK
-        }
-
-        val normalPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        val normalPaint = Paint().apply {
             textSize = 12f
-            typeface = android.graphics.Typeface.create(
-                android.graphics.Typeface.DEFAULT,
-                android.graphics.Typeface.NORMAL
-            )
             color = android.graphics.Color.BLACK
         }
 
-        val dividerPaint = Paint().apply {
-            color = android.graphics.Color.GRAY
-            strokeWidth = 1f
-        }
+        var y = 50f
 
-        var currentY = 50f
-        val leftMargin = 50f
-        val rightMargin = pageWidth - 50f
-        val contentWidth = rightMargin - leftMargin
+        // ---- Personal Info ----
+        canvas.drawText("Name: ${resume.personal.name}", 50f, y, titlePaint)
+        y += 25f
+        canvas.drawText("Email: ${resume.personal.email}", 50f, y, normalPaint)
+        y += 20f
+        canvas.drawText("Phone: ${resume.personal.phone}", 50f, y, normalPaint)
+        y += 20f
+        canvas.drawText("Address: ${resume.personal.address}", 50f, y, normalPaint)
 
-        // Draw photo if available
-        photo?.let { bitmap ->
-            try {
-                val safeBitmap = convertBitmapToSoftware(bitmap)
-                val photoSize = 80f
-                val photoX = rightMargin - photoSize
-                val scaledPhoto = safeBitmap.scale(photoSize.toInt(), photoSize.toInt(), false)
-                canvas.drawBitmap(scaledPhoto, photoX, currentY, null)
-            } catch (e: Exception) {
-                // Continue without photo if there's an error
-            }
-        }
-
-        // Personal Information
-        if (resume.personal.name.isNotBlank()) {
-            canvas.drawText(resume.personal.name, leftMargin, currentY + 20f, titlePaint)
-            currentY += 35f
-        }
-
-        if (resume.personal.email.isNotBlank()) {
-            canvas.drawText("Email: ${resume.personal.email}", leftMargin, currentY, normalPaint)
-            currentY += 20f
-        }
-
-        if (resume.personal.phone.isNotBlank()) {
-            canvas.drawText("Phone: ${resume.personal.phone}", leftMargin, currentY, normalPaint)
-            currentY += 20f
-        }
-
-        if (resume.personal.address.isNotBlank()) {
-            canvas.drawText("Address: ${resume.personal.address}", leftMargin, currentY, normalPaint)
-            currentY += 30f
-        }
-
-        // Check if we need to add education section
-        val hasEducation = resume.qualificationsSkills.degree.isNotBlank() ||
-                resume.qualificationsSkills.institute.isNotBlank()
-
-        if (hasEducation) {
-            // Education Section
-            canvas.drawLine(leftMargin, currentY, rightMargin, currentY, dividerPaint)
-            currentY += 25f
-
-            canvas.drawText("EDUCATION", leftMargin, currentY, headerPaint)
-            currentY += 25f
-
-            if (resume.qualificationsSkills.degree.isNotBlank()) {
-                canvas.drawText(resume.qualificationsSkills.degree, leftMargin, currentY, normalPaint)
-                currentY += 18f
-            }
-
-            if (resume.qualificationsSkills.institute.isNotBlank()) {
-                canvas.drawText(resume.qualificationsSkills.institute, leftMargin, currentY, normalPaint)
-                currentY += 18f
-            }
-
-            if (resume.qualificationsSkills.grade.isNotBlank()) {
-                canvas.drawText("Grade: ${resume.qualificationsSkills.grade}", leftMargin, currentY, normalPaint)
-                currentY += 18f
-            }
-
-            val startDate = resume.qualificationsSkills.startDate.takeIf { it.isNotBlank() } ?: ""
-            val endDate = resume.qualificationsSkills.endDate.takeIf { it.isNotBlank() } ?: ""
-            if (startDate.isNotEmpty() || endDate.isNotEmpty()) {
-                val duration = when {
-                    startDate.isNotEmpty() && endDate.isNotEmpty() -> "$startDate - $endDate"
-                    startDate.isNotEmpty() -> "From $startDate"
-                    endDate.isNotEmpty() -> "Until $endDate"
-                    else -> ""
-                }
-                if (duration.isNotEmpty()) {
-                    canvas.drawText(duration, leftMargin, currentY, normalPaint)
-                    currentY += 25f
-                }
-            } else {
-                currentY += 25f
-            }
-        }
-
-        // Skills Section
-        if (resume.qualificationsSkills.skills.isNotBlank()) {
-            canvas.drawLine(leftMargin, currentY, rightMargin, currentY, dividerPaint)
-            currentY += 25f
-
-            canvas.drawText("SKILLS", leftMargin, currentY, headerPaint)
-            currentY += 25f
-
-            currentY = drawMultiLineText(
-                canvas,
-                resume.qualificationsSkills.skills,
-                leftMargin,
-                currentY,
-                contentWidth.toInt(),
-                normalPaint
-            )
-            currentY += 25f
-        }
-
-        // Experience Section
-        val hasExperience = resume.experience.company.isNotBlank() ||
-                resume.experience.position.isNotBlank() ||
-                resume.experience.description.isNotBlank()
-
-        if (hasExperience) {
-            canvas.drawLine(leftMargin, currentY, rightMargin, currentY, dividerPaint)
-            currentY += 25f
-
-            canvas.drawText("EXPERIENCE", leftMargin, currentY, headerPaint)
-            currentY += 25f
-
-            // Position and Company
-            val jobTitle = buildString {
-                if (resume.experience.position.isNotBlank()) {
-                    append(resume.experience.position)
-                }
-                if (resume.experience.company.isNotBlank()) {
-                    if (isNotEmpty()) append(" at ")
-                    append(resume.experience.company)
-                }
-            }
-
-            if (jobTitle.isNotEmpty()) {
-                canvas.drawText(jobTitle, leftMargin, currentY, normalPaint)
-                currentY += 18f
-            }
-
-            // Experience Duration
-            val expStartDate = resume.experience.startDate.takeIf { it.isNotBlank() } ?: ""
-            val expEndDate = resume.experience.endDate.takeIf { it.isNotBlank() } ?: ""
-            if (expStartDate.isNotEmpty() || expEndDate.isNotEmpty()) {
-                val expDuration = when {
-                    expStartDate.isNotEmpty() && expEndDate.isNotEmpty() -> "$expStartDate - $expEndDate"
-                    expStartDate.isNotEmpty() -> "From $expStartDate"
-                    expEndDate.isNotEmpty() -> "Until $expEndDate"
-                    else -> ""
-                }
-                if (expDuration.isNotEmpty()) {
-                    canvas.drawText(expDuration, leftMargin, currentY, normalPaint)
-                    currentY += 18f
-                }
-            }
-
-            // Description
-            if (resume.experience.description.isNotBlank()) {
-                currentY += 5f // Small gap before description
-                currentY = drawMultiLineText(
-                    canvas,
-                    resume.experience.description,
-                    leftMargin,
-                    currentY,
-                    contentWidth.toInt(),
-                    normalPaint
-                )
-            }
-        }
-
-        // Finish the page
+        // ---- Finish page ----
         pdf.finishPage(page)
 
-        // Write to output stream
-        context.contentResolver.openOutputStream(outputUri)?.use { outputStream ->
-            pdf.writeTo(outputStream)
-            outputStream.flush()
-        } ?: throw IOException("Could not open output stream for URI: $outputUri")
-
-    } catch (e: Exception) {
-        throw IOException("Failed to generate PDF: ${e.message}", e)
+        // ---- Write to output safely ----
+        context.contentResolver.openOutputStream(outputUri, "w")?.use { out ->
+            pdf.writeTo(out)
+            out.flush()
+        } ?: throw IOException("Could not open output stream for $outputUri")
     } finally {
-        try {
-            pdf?.close()
-        } catch (e: Exception) {
-            // Log but don't throw
-        }
+        pdf.close() // always close
     }
 }
 
-private fun drawMultiLineText(
-    canvas: Canvas,
-    text: String,
-    x: Float,
-    startY: Float,
-    maxWidth: Int,
-    paint: Paint
-): Float {
-    if (text.isBlank()) return startY
 
-    val words = text.trim().split(Regex("\\s+"))
-    var currentY = startY
-    var currentLine = ""
+//private const val CREATE_FILE_REQUEST = 1001
+//
+//fun createPdfFile() {
+//    val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+//        addCategory(Intent.CATEGORY_OPENABLE)
+//        type = "application/pdf"
+//        putExtra(Intent.EXTRA_TITLE, "resume.pdf") // Default filename
+//    }
+//    startActivityForResult(intent, CREATE_FILE_REQUEST)
+//}
+//
+//fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//    super.onActivityResult(requestCode, resultCode, data)
+//
+//    if (requestCode == CREATE_FILE_REQUEST && resultCode == RESULT_OK) {
+//        data?.data?.let { uri ->
+//            // ✅ This uri is guaranteed to be writable
+//            generateResumePDFToURI(this, sampleResumeData(), null, uri)
+//        }
+//    }
+//}
 
-    for (word in words) {
-        val testLine = if (currentLine.isEmpty()) word else "$currentLine $word"
-        val testWidth = paint.measureText(testLine)
 
-        if (testWidth <= maxWidth) {
-            currentLine = testLine
-        } else {
-            // Draw the current line if it's not empty
-            if (currentLine.isNotEmpty()) {
-                canvas.drawText(currentLine, x, currentY, paint)
-                currentY += 20f
-            }
-            currentLine = word
-        }
-    }
-
-    // Draw the last line if it's not empty
-    if (currentLine.isNotEmpty()) {
-        canvas.drawText(currentLine, x, currentY, paint)
-        currentY += 20f
-    }
-
-    return currentY
-}
-
-private fun convertBitmapToSoftware(bitmap: Bitmap): Bitmap {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-        bitmap.config == Bitmap.Config.HARDWARE) {
-        bitmap.copy(Bitmap.Config.ARGB_8888, false)
-    } else {
-        bitmap
-    }
-}
 
 
 
